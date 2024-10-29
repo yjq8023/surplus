@@ -1,21 +1,19 @@
-.directBet {
+.numberCheckbox {
+  user-select: none;
 }
-.item {
-  background-color: var(--break3);
+.checkItem {
+  background-color: #fff;
+  width: 20px;
+  height: 24px;
+  line-height: 24px;
   display: inline-block;
-  padding: 6px;
+  text-align: center;
+  border: 1px solid rgb(217, 217, 217);
   border-radius: 4px;
-  position: relative;
-}
-.item .icon {
-  position: absolute;
-  right: -6px;
-  top: -6px;
-  font-size: 14px;
-  color: var(--red);
+  color: rgba(0, 0, 0, 0.88);
   cursor: pointer;
 }
-
-.addBtn {
-  height: 36px;
+.checkItem.active {
+  background: var(--primary);
+  color: #fff;
 }

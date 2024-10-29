@@ -1,0 +1,27 @@
+.login {
+  background-color: #fff;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("~@/public/images/loginBg.png");
+  background-size: cover;
+  position: relative;
+  .form {
+    position: absolute;
+    right: 13%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 380px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .body {
+
+    }
+  }
+}

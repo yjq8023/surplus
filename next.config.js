@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
-import path from 'path'
-// const path = require('path')
+const path = require('path')
 
 const nextConfig = {
   sassOptions: {
@@ -8,4 +7,4 @@ const nextConfig = {
   }
 };
 
-export default nextConfig;
+module.exports = nextConfig;
