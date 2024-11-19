@@ -2,14 +2,12 @@
 
 import React, { useState } from 'react'
 import { Form, Button, Space, Input, InputNumber } from 'antd'
-import DirectBet from "@/app/components/BetTypes/DirectBet";
+import DirectBet from "@/components/BetTypes/DirectBet";
 import styles from './index.module.css'
-import {betTypes} from "@/app/config";
-import GroupBet from "@/app/components/BetTypes/GroupBet";
+import {betTypes} from "@/config";
+import GroupBet from "@/components/BetTypes/GroupBet";
 
 const FormItem = Form.Item
-
-
 
 const typeOptions = betTypes.map(item => {
   return {
@@ -31,8 +29,6 @@ const Bet = () => {
     const oldOrders = form.getFieldValue('orders') || []
     form.setFieldValue('orders', [...oldOrders, defaultValue])
   }
-
-
 
   return (
     <div className={styles.bet}>
@@ -103,7 +99,7 @@ const renderTypeForm = (type: string, props: any) => {
   return 'todo'
 }
 const BetTypeCard = (props: any) => {
-  const { key, name, ...restField } = props;
+  const { name, ...restField } = props;
   const form = Form.useFormInstance()
   const values = Form.useWatch(['orders', name], form)
 

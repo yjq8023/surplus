@@ -1,21 +1,21 @@
 'use client'
 import { Input, Button, Space, Form } from 'antd'
+import { useEffect } from 'react'
 import { PlusOutlined, CloseCircleFilled } from '@ant-design/icons'
 import styles from './index.module.css'
-import {isNull} from "@/app/utils";
+import {isNull} from "@/utils";
 
 const DirectBet = (props: any) => {
-  const { name, count = 3, ...other } = props
+  const { name, count = 3, length = 3, ...other } = props
   return (
     <div className={styles.directBet}>
-      <Form.List name={[name, 'data']} initialValue={['']} {...other}>
+      <Form.List name={name} initialValue={['']} {...other}>
         {(fields, { add, remove }, { errors }) => (
-          <Space wrap>
+          <Space wrap size={[14, 0]}>
             {fields.map((field, index) => (
               <Form.Item
                 required={false}
                 key={field.key}
-
               >
                 <Form.Item
                   {...field}
@@ -23,8 +23,6 @@ const DirectBet = (props: any) => {
                   rules={[
                     {
                       validator:(rule, val) => {
-                        console.log('validator');
-                        console.log(val);
                         if(!Array.isArray(val)) {
                           return Promise.reject('请输入' + count + '位数字')
                         }
@@ -37,7 +35,7 @@ const DirectBet = (props: any) => {
                   ]}
                   noStyle
                 >
-                  <DirectBetItem onRemove={() => remove(field.name)} />
+                  <DirectBetItem length={length} onRemove={() => remove(field.name)} />
                 </Form.Item>
               </Form.Item>
 
@@ -63,11 +61,16 @@ const DirectBetItem = (props: any) => {
 }
 
 const ArrayInputOpt = (props: any) => {
-  const { value = [], onChange, other } = props;
+  const { value = [], onChange, ...other } = props;
+  useEffect(() => {
+    if(Array.isArray(value) && value.length > props.length) {
+      onChange(value.splice(0, props.length))
+    }
+  }, [value])
   const handleChange = (v: string) => {
     onChange(v.split(''))
   }
-  return <Input.OTP value={Array.isArray(value) && value.join('')} onChange={handleChange} formatter={(v) => isNull(v) ? '*' : v } size={'small'} length={3} {...other}  />
+  return <Input.OTP value={Array.isArray(value) && value.join('')} onChange={handleChange} formatter={(v) => isNull(v) ? '*' : v } size={'small'} {...other}  />
 }
 
 export default DirectBet

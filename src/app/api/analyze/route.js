@@ -1,4 +1,4 @@
-import {betTypes} from "@/app/config";
+import {betTypes} from "@//config";
 
 const OpenAI = require("openai");
 

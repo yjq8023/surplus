@@ -1,15 +1,15 @@
 'use client'
-import { Input, Button, Space, Form } from 'antd'
+import { InputNumber, Button, Space, Form } from 'antd'
 import { PlusOutlined, CloseCircleFilled } from '@ant-design/icons'
-import styles from './index.module.css'
+import styles from './index.module.scss'
 
-const DirectBet = (props: any) => {
-  const { name } = props
+const GroupBet = (props: any) => {
+  const { name, min } = props
   return (
     <div className={styles.directBet}>
       <Form.List name={name} initialValue={['']}>
         {(fields, { add, remove }, { errors }) => (
-          <Space wrap>
+          <Space wrap size={[14, 0]}>
             {fields.map((field, index) => (
               <Form.Item
                 required={false}
@@ -18,16 +18,17 @@ const DirectBet = (props: any) => {
                 <Form.Item
                   {...field}
                   validateTrigger={['onChange']}
-                  rules={[
-                    {
-                      required: true,
-                      whitespace: true,
-                      message: "请输入",
-                    },
-                  ]}
+                  rules={[{
+                    validator: (rule, val) => {
+                      if(val.length < min) {
+                        return Promise.reject('最少选择' + min + '位数字')
+                      }
+                      return Promise.resolve()
+                    }
+                  }]}
                   noStyle
                 >
-                  <DirectBetItem onRemove={() => remove(field.name)} />
+                  <GroupBetItem onRemove={() => remove(field.name)} />
                 </Form.Item>
               </Form.Item>
 
@@ -42,14 +43,14 @@ const DirectBet = (props: any) => {
   )
 }
 
-const DirectBetItem = (props: any) => {
+const GroupBetItem = (props: any) => {
   const { onRemove, ...other } = props
   return (
     <div className={styles.item}>
-      <Input.OTP size={'small'} length={3} {...other}  />
+      <InputNumber {...other} size={'small'} min={1} controls={false}/>
       <CloseCircleFilled  className={styles.icon} onClick={onRemove}/>
     </div>
   )
 }
 
-export default DirectBet
+export default GroupBet

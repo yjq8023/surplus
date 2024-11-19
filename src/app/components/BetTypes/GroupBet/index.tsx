@@ -1,16 +1,16 @@
 'use client'
 import { Input, Button, Space, Form } from 'antd'
 import { PlusOutlined, CloseCircleFilled } from '@ant-design/icons'
-import NumberCheckbox from '@/app/components/NumberCheckbox'
+import NumberCheckbox from '@//components/NumberCheckbox'
 import styles from './index.module.css'
 
 const GroupBet = (props: any) => {
   const { name, min } = props
   return (
     <div className={styles.directBet}>
-      <Form.List name={[name, 'data']} initialValue={['']}>
+      <Form.List name={name} initialValue={['']}>
         {(fields, { add, remove }, { errors }) => (
-          <Space wrap>
+          <Space wrap size={[14, 0]}>
             {fields.map((field, index) => (
               <Form.Item
                 required={false}
