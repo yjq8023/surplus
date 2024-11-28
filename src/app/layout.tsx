@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { ConfigProvider } from 'antd';
+import zh_CN from 'antd/locale/zh_CN';
 import "./globals.css";
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
+dayjs.locale('zh-cn');
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,10 +28,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  dayjs.locale('zh-cn');
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <ConfigProvider locale={zh_CN}>
+          {children}
+        </ConfigProvider>
       </body>
     </html>
   );

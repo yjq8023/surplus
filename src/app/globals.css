@@ -45,3 +45,23 @@ a {
     color-scheme: dark;
   }
 }
+
+.sub-title {
+  font-size: 16px;
+  margin-bottom: 8px;
+  position: relative;
+  padding-left: 10px;
+  line-height: 24px;
+  font-weight: 500;
+}
+.sub-title:before {
+  content: ' ';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background-color: var(--primary);
+}

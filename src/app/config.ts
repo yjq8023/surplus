@@ -1,3 +1,5 @@
+import { log } from "console"
+
 export const betTypes = [
   {
     name: '直选（单、或直）',
@@ -106,3 +108,5 @@ export const betTypes = [
     unitPrice: 10,
   }
 ]
+
+

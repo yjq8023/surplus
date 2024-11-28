@@ -4,9 +4,9 @@ import styles from "./page.module.css";
 import { Button } from 'antd'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/auth'
+import { log } from "console";
 
 export default function Home() {
-
   const getSession = async () => {
     const session = await auth()
     console.log(session)

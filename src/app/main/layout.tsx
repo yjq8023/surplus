@@ -16,8 +16,8 @@ const MainLayout = ({ children }: any) => {
       icon: <MoneyCollectOutlined />
     },
     {
-      key: '/main/order',
-      label: '历史记录',
+      key: '/main/periods',
+      label: '期数',
       icon: <ProfileOutlined />
     }
   ]
@@ -29,7 +29,7 @@ const MainLayout = ({ children }: any) => {
   }
   return (
     <Layout className={styles.layout}>
-      <Sider className={styles.sider}>
+      <Sider className={styles.sider} collapsed={true}>
         <div className={styles.logo}>
           盈余
         </div>
