@@ -5,7 +5,7 @@ import NumberCheckbox from '@//components/NumberCheckbox'
 import styles from './index.module.css'
 
 const GroupBet = (props: any) => {
-  const { name, min } = props
+  const { name, min, rules = [] } = props
   return (
     <div className={styles.directBet}>
       <Form.List name={name} initialValue={['']}>
@@ -19,14 +19,7 @@ const GroupBet = (props: any) => {
                 <Form.Item
                   {...field}
                   validateTrigger={['onChange']}
-                  rules={[{
-                    validator: (rule, val) => {
-                      if(val.length < min) {
-                        return Promise.reject('最少选择' + min + '位数字')
-                      }
-                      return Promise.resolve()
-                    }
-                  }]}
+                  rules={rules}
                   noStyle
                 >
                   <GroupBetItem onRemove={() => remove(field.name)} />
@@ -49,7 +42,7 @@ const GroupBetItem = (props: any) => {
   return (
     <div className={styles.item}>
       <NumberCheckbox {...other} />
-      <CloseCircleFilled  className={styles.icon} onClick={onRemove}/>
+      <CloseCircleFilled className={styles.icon} onClick={onRemove} />
     </div>
   )
 }

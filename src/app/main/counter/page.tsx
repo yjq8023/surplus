@@ -2,15 +2,16 @@
 import { useEffect, useState } from 'react'
 import DirectBet from "@/components/BetTypes/DirectBet";
 import GroupBet from "@/components/BetTypes/GroupBet";
-import { Form, Space, InputNumber, Row, Col, Button, Input, Empty, Select, Tag, message } from 'antd'
+import { Form, Space, InputNumber, Row, Col, Button, Input, Empty, Select, Tag, message, Tooltip } from 'antd'
 import styles from "./index.module.scss";
 import { betTypes } from "@/config";
 import YiMaDIngWei from "@/components/BetTypes/YiMaDIngWei";
 import { getPeriodsOptions } from '@/services/periods'
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useParams, useSearchParams } from 'next/navigation'
 import { getClientOptions } from '@/services/client';
 import { createOrder } from '@/services/orders';
+import { isNull } from '@/utils';
 
 const FormItem = Form.Item
 
@@ -86,7 +87,7 @@ const Counter = () => {
         {
           betTypes.map((item) => {
             return (
-              <BetTypeCard key={item.type} title={item.name} type={item.type} unitPrice={item.unitPrice} onAdd={onAdd} />
+              <BetTypeCard key={item.type} config={item} onAdd={onAdd} />
             )
           })
         }
@@ -130,6 +131,7 @@ const OrderContent = (props: any) => {
       return item.type === type
     })[0].name
   }
+
   return (
     <div>
       <div className={styles.orderContent}>
@@ -139,6 +141,7 @@ const OrderContent = (props: any) => {
         {
           value.map((item: any, index: number) => {
             const { total } = item
+            const isNeedEmpty = ['ymdw', 'emdw'].includes(item.type)
             return (
               <div key={index} className={styles.orderContentItem}>
                 <div className={styles.orderContentItemTitle}>
@@ -147,9 +150,15 @@ const OrderContent = (props: any) => {
                 </div>
                 <Space wrap>
                   {item.data.map((item: any, index: number) => {
+                    let numbers = [...item];
+                    if (isNeedEmpty) {
+                      numbers = item.map((i: any) => {
+                        return isNull(i) ? '-' : i
+                      })
+                    }
                     return (
                       <span key={index} className={styles.orderContentDataItem}>
-                        {Array.isArray(item) ? item.join('') : item}
+                        {Array.isArray(numbers) ? numbers.join('') : 'todo'}
                       </span>
                     )
                   })}
@@ -169,37 +178,38 @@ const OrderContent = (props: any) => {
 
 
 const RenderTypeForm = (props: any) => {
-  const { type } = props;
+  const { type, validator } = props;
+  const rules = [{ validator: (rule: any, value: any) => validator(value) }]
   if (type === 'zx') {
-    return <DirectBet {...props} />
+    return <DirectBet rules={rules} {...props} />
   }
   if (type === 'zxzs') {
-    return <DirectBet {...props} />
+    return <DirectBet rules={rules} {...props} />
   }
   if (type === 'zxzl') {
-    return <DirectBet {...props} />
+    return <DirectBet rules={rules} {...props} />
   }
   if (type === 'zs') {
-    return <GroupBet min={2} {...props} />
+    return <GroupBet rules={rules} min={2} {...props} />
   }
   if (type === 'zl') {
-    return <GroupBet min={3} {...props} />
+    return <GroupBet rules={rules} min={3} {...props} />
   }
   if (type === 'dd') {
-    return <DirectBet length={1} count={1} {...props} />
-    // return  <DuXuan {...props}/>
+    return <DirectBet rules={rules} length={1} {...props} />
   }
   if (type === 'ymdw') {
-    return <YiMaDIngWei count={1} {...props} />
+    return <YiMaDIngWei rules={rules} count={1} {...props} />
   }
   if (type === 'emdw') {
-    return <YiMaDIngWei count={2} {...props} />
+    return <YiMaDIngWei rules={rules} count={2} {...props} />
   }
   return 'todo'
 }
 
 const BetTypeCard = (props: any) => {
-  const { title, type, unitPrice, onAdd } = props;
+  const { onAdd } = props;
+  const { name, type, description, unitPrice, validator } = props.config;
   const [form] = Form.useForm()
 
   const times = Form.useWatch('times', form)
@@ -207,6 +217,10 @@ const BetTypeCard = (props: any) => {
   const total = unitPrice * data?.length * times
 
   const onFinish = (formValues: any) => {
+    if (formValues.data.length === 0) {
+      message.error('请添加下注内容')
+      return
+    }
     onAdd({
       ...formValues,
       type,
@@ -231,10 +245,13 @@ const BetTypeCard = (props: any) => {
     <Form form={form} onFinish={onFinish}>
       <div className={styles.betTypeCard}>
         <h4>
-          {title}
+          {name}
+          <Tooltip title={description} color='#108ee9'>
+            <QuestionCircleOutlined />
+          </Tooltip>
         </h4>
         <div style={{ maxWidth: '100%' }}>
-          <RenderTypeForm name={'data'} type={type} />
+          <RenderTypeForm name={'data'} type={type} validator={validator} />
         </div>
         <div>
           <FormItem name={'msg'} noStyle>
