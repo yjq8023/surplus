@@ -1,29 +1,40 @@
 'use client'
 import React from 'react';
 import { Layout, Menu } from 'antd';
-import { ProfileOutlined, MoneyCollectOutlined } from '@ant-design/icons'
-import { useRouter } from 'next/navigation'
+import { AccountBookOutlined, MoneyCollectOutlined, WechatOutlined, FileDoneOutlined } from '@ant-design/icons'
+import { useRouter, usePathname } from 'next/navigation'
 import styles from './layout.module.scss'
 
 const { Header, Sider, Content } = Layout;
 
 const MainLayout = ({ children }: any) => {
   const router = useRouter()
+  const pathname = usePathname()
+
   const menuItems = [
     {
+      key: '/main/periods',
+      label: '周期',
+      icon: <AccountBookOutlined />
+    },
+    {
       key: '/main/counter',
-      label: '计算器',
+      label: '打单',
       icon: <MoneyCollectOutlined />
     },
     {
-      key: '/main/periods',
-      label: '期数',
-      icon: <ProfileOutlined />
+      key: '/main/orders',
+      label: '历史订单',
+      icon: <FileDoneOutlined />
+    },
+    {
+      key: '/main/client',
+      label: '客户',
+      icon: <WechatOutlined />
     }
   ]
 
   const handleSelect = (item: any) => {
-    console.log(item);
     const { key } = item;
     router.push(key)
   }
@@ -36,7 +47,7 @@ const MainLayout = ({ children }: any) => {
         <div className={styles.menu}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['1']}
+            selectedKeys={[pathname]}
             style={{ borderRight: 0 }}
             items={menuItems}
             onSelect={handleSelect}
@@ -44,7 +55,7 @@ const MainLayout = ({ children }: any) => {
         </div>
       </Sider>
       <Layout>
-        <Header className={styles.header}>Header</Header>
+        <Header className={styles.header}></Header>
         <Content className={styles.content}>
           {children}
         </Content>

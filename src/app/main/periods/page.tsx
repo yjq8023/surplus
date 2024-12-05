@@ -5,6 +5,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import AddModal from "@/main/periods/components/AddModal";
 import { createPeriods, deletePeriods, getPeriods } from "@/services/periods";
 import dayjs from 'dayjs'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const pageSize = 20;
 const Periods = () => {
@@ -18,7 +20,7 @@ const Periods = () => {
     handleGetListData()
   }, [])
 
-  const handleGetListData = (page = 1) => {
+  const handleGetListData: any = (page = 1) => {
     const searchFormData = searchForm.getFieldsValue();
     setPage(page)
     getPeriods({
@@ -74,7 +76,7 @@ const Periods = () => {
   return (
     <div>
       <div style={{ paddingTop: 12 }}>
-        <Form form={searchForm} onFinish={() => handleGetListData()}>
+        <Form form={searchForm} onFinish={() => handleGetListData()} onReset={() => handleGetListData()}>
           <Space size={24}>
             <Form.Item label="名称" name={'name'}>
               <Input placeholder={'请输入周期名称'} style={{ width: 240 }} />
@@ -119,7 +121,8 @@ const Periods = () => {
                 }
               ]
               const actions: React.ReactNode[] = [
-                <a>订单</a>,
+                <Link href={`/main/counter?periodsId=${item.id}`}>打单</Link>,
+                <a>订单列表</a>,
                 (
                   <Dropdown menu={{ items, onClick: (e) => handleAction(e, item) }} placement="bottomLeft" arrow={{ pointAtCenter: true }}>
                     <a onClick={(e) => e.preventDefault()}>

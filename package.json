@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "database-push": "npx prisma migrate dev"
+    "pushdb": "npx prisma migrate dev"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",

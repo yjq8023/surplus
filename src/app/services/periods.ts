@@ -9,3 +9,6 @@ export const getPeriods = (d: any = {}) => {
 export const deletePeriods = (id: string) => {
   return request.delete(`/periods`, { id })
 }
+export const getPeriodsOptions = (d: any = {}) => {
+  return request.get('/periods/options', d)
+}

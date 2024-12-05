@@ -1,29 +1,88 @@
 'use client'
+import { useEffect, useState } from 'react'
 import DirectBet from "@/components/BetTypes/DirectBet";
 import GroupBet from "@/components/BetTypes/GroupBet";
-import { Form, Space, InputNumber, Row, Col, Button, Input, Empty } from 'antd'
+import { Form, Space, InputNumber, Row, Col, Button, Input, Empty, Select, Tag, message } from 'antd'
 import styles from "./index.module.scss";
-import {betTypes} from "@/config";
+import { betTypes } from "@/config";
 import YiMaDIngWei from "@/components/BetTypes/YiMaDIngWei";
+import { getPeriodsOptions } from '@/services/periods'
+import { PlusOutlined } from '@ant-design/icons'
+import { useParams, useSearchParams } from 'next/navigation'
+import { getClientOptions } from '@/services/client';
+import { createOrder } from '@/services/orders';
 
 const FormItem = Form.Item
 
 const Counter = () => {
+  const [options, setOptions] = useState([])
+  const [userOptions, setUserOptions] = useState([])
+  const [submiting, setSubmiting] = useState(false)
   const [form] = Form.useForm()
-  const data = Form.useWatch('data', form)
+  const params = useSearchParams();
+  const periodsId = params.get('periodsId')
+
+  useEffect(() => {
+    handleGetPeriodsOptions()
+    handleGetClientOptions()
+  }, [])
+
   const onAdd = (d: any) => {
-    console.log('onAdd');
-    console.log(d);
-    const data = form.getFieldValue('data') || []
+    const data = form.getFieldValue('tickets') || []
     data.push(d)
     form.setFieldsValue({
-      data
+      tickets: data
     })
+  }
+
+  const handleGetPeriodsOptions = async () => {
+    const res = await getPeriodsOptions({})
+    setOptions(res.map((item: any) => {
+      const tag = item.type === 'tc' ? <Tag color={'#55acee'} style={{ marginRight: 0 }}>体</Tag> : <Tag color={'#f50'} style={{ marginRight: 0 }}>福</Tag>
+      return {
+        label: (
+          <div>
+            <span>{`${item.name}（${item.date}）`}</span>
+            {tag}
+          </div>
+        ),
+        value: item.id
+      }
+    }))
+  }
+
+  const handleGetClientOptions = () => {
+    getClientOptions().then((res) => {
+      setUserOptions(res.map((item: any) => {
+        return {
+          label: item.name,
+          value: item.id
+        }
+      }))
+    })
+  }
+
+  const handleSubmitOrder = async (formData: any) => {
+    console.log(formData);
+    setSubmiting(true)
+    const { periodId, clientId, tickets } = formData
+    try {
+      const res = await createOrder({
+        periodId, clientId, tickets
+      })
+      message.success('提交订单成功！')
+      form.setFieldsValue({
+        tickets: []
+      })
+      setSubmiting(false)
+    } catch {
+      setSubmiting(false)
+    }
   }
 
   return (
     <Row className={styles.page} gutter={24}>
-      <Col flex={'1 0'}  className={styles.config}>
+      <Col flex={'1 0'} className={styles.config}>
         {
           betTypes.map((item) => {
             return (
@@ -35,26 +94,38 @@ const Counter = () => {
       <Col flex={'0 0 580px'}>
         <div className={styles.order}>
           <h4>订单信息</h4>
-          <Form form={form} layout={'vertical'}>
-            <FormItem label={'客户'} name={'user'}>
-              <Input style={{ width: 320 }} placeholder={'请输入/选择客户'} />
+          <Form form={form} layout={'vertical'} onFinish={handleSubmitOrder}>
+            <FormItem label={'周期'} name={'periodId'} initialValue={periodsId} rules={[{ required: true, message: '请选择周期' }]}>
+              <Select options={options} style={{ width: 320 }} placeholder={'请选择周期'} />
             </FormItem>
-            <FormItem label={'订单内容'} name={'data'}>
+            <FormItem
+              label={(
+                <div>
+                  客户
+                  <Button icon={<PlusOutlined />} color='primary' size='small' variant="filled" style={{ marginLeft: 8 }}></Button>
+                </div>
+              )}
+              name={'clientId'}
+              rules={[{ required: true, message: '请选择客户' }]}
+            >
+              <Select showSearch options={userOptions} style={{ width: 320 }} placeholder={'请选择客户，可输入搜索'} />
+            </FormItem>
+            <FormItem label={'订单内容'} name={'tickets'} rules={[{ type: 'array', required: true, message: '请添加订单' }]}>
               <OrderContent />
             </FormItem>
-            <FormItem>
-              <Button type={'primary'}>提交</Button>
-            </FormItem>
+            <div style={{ padding: '20px 48px 0' }}>
+              <Button loading={submiting} size='large' block type={'primary'} htmlType='submit'>提交</Button>
+            </div>
           </Form>
         </div>
       </Col>
-    </Row>
+    </Row >
   )
 }
 
 const OrderContent = (props: any) => {
   const { value = [] } = props
-  const getTitle = (type) => {
+  const getTitle = (type: string) => {
     return betTypes.filter((item) => {
       return item.type === type
     })[0].name
@@ -75,11 +146,11 @@ const OrderContent = (props: any) => {
                   {getTitle(item.type)}，共 {item.data?.length} 注，{item.times} 倍，合计 {total} 元
                 </div>
                 <Space wrap>
-                  {item.data.map((item, index: number) => {
+                  {item.data.map((item: any, index: number) => {
                     return (
                       <span key={index} className={styles.orderContentDataItem}>
-                      {Array.isArray(item) ? item.join('') : item}
-                    </span>
+                        {Array.isArray(item) ? item.join('') : item}
+                      </span>
                     )
                   })}
                 </Space>
@@ -99,30 +170,30 @@ const OrderContent = (props: any) => {
 
 const RenderTypeForm = (props: any) => {
   const { type } = props;
-  if(type === 'zx') {
-    return <DirectBet {...props}/>
+  if (type === 'zx') {
+    return <DirectBet {...props} />
   }
-  if(type === 'zxzs') {
-    return <DirectBet {...props}/>
+  if (type === 'zxzs') {
+    return <DirectBet {...props} />
   }
-  if(type === 'zxzl') {
-    return <DirectBet {...props}/>
+  if (type === 'zxzl') {
+    return <DirectBet {...props} />
   }
-  if(type === 'zs') {
-    return <GroupBet min={2} {...props}/>
+  if (type === 'zs') {
+    return <GroupBet min={2} {...props} />
   }
-  if(type === 'zl') {
-    return <GroupBet min={3} {...props}/>
+  if (type === 'zl') {
+    return <GroupBet min={3} {...props} />
   }
-  if(type === 'dd') {
-    return <DirectBet length={1} count={1} {...props}/>
+  if (type === 'dd') {
+    return <DirectBet length={1} count={1} {...props} />
     // return  <DuXuan {...props}/>
   }
-  if(type === 'ymdw') {
-    return <YiMaDIngWei count={1} {...props}/>
+  if (type === 'ymdw') {
+    return <YiMaDIngWei count={1} {...props} />
   }
-  if(type === 'emdw') {
-    return <YiMaDIngWei count={2} {...props}/>
+  if (type === 'emdw') {
+    return <YiMaDIngWei count={2} {...props} />
   }
   return 'todo'
 }
@@ -148,7 +219,7 @@ const BetTypeCard = (props: any) => {
     let str = e.target.value;
     // 字符串中多个空格合并为一个
     str = str.replace(/\s+/g, '/')
-    if(!str) return
+    if (!str) return
     // 以斜杠、逗号、空格等特殊字符为分隔符分割字符串
     // 匹配字符串是否全是数字
     const arr = str.split(/[\/,.。，\s]/).filter((item: string) => /^\d+(\/\d+)*$/.test(item))
@@ -160,9 +231,9 @@ const BetTypeCard = (props: any) => {
     <Form form={form} onFinish={onFinish}>
       <div className={styles.betTypeCard}>
         <h4>
-          { title }
+          {title}
         </h4>
-        <div style={{ maxWidth: '100%'}}>
+        <div style={{ maxWidth: '100%' }}>
           <RenderTypeForm name={'data'} type={type} />
         </div>
         <div>
@@ -175,14 +246,14 @@ const BetTypeCard = (props: any) => {
             <span>
               倍数：
               <FormItem name={'times'} label={'倍数'} initialValue={1} noStyle>
-                <InputNumber size={'small'} style={{ width: 58 }} min={1} variant="filled" controls={false}/>
+                <InputNumber size={'small'} style={{ width: 58 }} min={1} variant="filled" controls={false} />
               </FormItem>
             </span>
             <span>
               <FormItem noStyle>
                 <span>
                   合计：
-                  <span style={{ color: 'var(--primary)', fontWeight: 600}}>
+                  <span style={{ color: 'var(--primary)', fontWeight: 600 }}>
                     {total}
                   </span>
                   元
