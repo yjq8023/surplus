@@ -1,6 +1,6 @@
 import { isNull } from "@/utils";
 
-const baseUrl = '/api'
+export const baseUrl = '/api'
 
 const request = {
   get(url: string, params: any = {}) {

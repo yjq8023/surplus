@@ -4,7 +4,7 @@ import { Space, Table, Form, Select, Button, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons'
 import AddModal from './components/AddModal';
 import { deleteClient, getClient } from '@/services/client';
-import { getOrders } from '@/services/orders';
+import { exportOrders, getOrders } from '@/services/orders';
 import dayjs from 'dayjs'
 import { isNull } from '@/utils';
 import styles from './index.module.scss';
@@ -52,6 +52,11 @@ const Client = () => {
       setListData(list);
       setTotal(res.total);
     })
+  }
+
+  const handleExport = () => {
+    const searchFormData = searchForm.getFieldsValue();
+    exportOrders(searchFormData)
   }
 
   const renderNumber = (type: string, data: any) => {
@@ -231,7 +236,7 @@ const Client = () => {
             共 {total} 笔订单
           </span>
           <div className={styles.action}>
-            <Button type='primary'>导出</Button>
+            <Button type='primary' onClick={handleExport}>导出</Button>
           </div>
         </div>
         <div>
