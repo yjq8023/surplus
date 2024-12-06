@@ -3,9 +3,15 @@ import dayjs from 'dayjs'
 
 const prisma = new PrismaClient()
 export const GET = async (request) => {
+  const url = new URL(request.url);
+  const params = Object.fromEntries(url.searchParams.entries());
 
+  const where = {}
+  if (params.disabled) {
+    where.disabled = Boolean(params.disabled)
+  }
   const res = await prisma.periods.findMany({
-    where: {},
+    where,
   });
 
   return Response.json({

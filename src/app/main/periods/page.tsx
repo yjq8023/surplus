@@ -7,6 +7,8 @@ import { createPeriods, deletePeriods, getPeriods } from "@/services/periods";
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import lodash from 'lodash'
+import OpenLotteryModal from './components/OpenLotteryModal';
 
 const pageSize = 20;
 const Periods = () => {
@@ -14,6 +16,7 @@ const Periods = () => {
   const [total, setTotal] = useState(0)
   const [periodsData, setPeriodsData] = useState([])
   const addModalRef = useRef<any>()
+  const openLotteryModalRef = useRef<any>()
   const [searchForm] = Form.useForm();
 
   useEffect(() => {
@@ -50,6 +53,7 @@ const Periods = () => {
   const handleAction = ({ key }: any, item: any) => {
     if (key === 'open') {
       console.log('open');
+      openLotteryModalRef.current.open(item)
     }
     if (key === 'update') {
       handleAdd({
@@ -131,13 +135,39 @@ const Periods = () => {
                   </Dropdown>
                 ),
               ];
-              const tag = item.type === 'tc' ? <Tag color={'#55acee'} style={{ marginRight: 0 }}>体</Tag> : <Tag color={'#f50'} style={{ marginRight: 0 }}>福</Tag>
+              const total = item.orders.reduce((total: number = 0, item: any) => {
+                const itemTotal = item.tickets.reduce((total: number = 0, item: any) => {
+                  return total + item.total;
+                }, 0);
+                return total + itemTotal;
+              }, 0);
+              const clients = item.orders.map((item: any) => {
+                return item.clientId
+              });
+              const tag = item.type === 'tc' ? <Tag color={'#55acee'} style={{ marginRight: 0 }}>体彩</Tag> : <Tag color={'#f50'} style={{ marginRight: 0 }}>福彩</Tag>
+              const tags = (
+                <div>
+                  {
+                    item.disabled ? (
+                      <Tag>已开奖</Tag>
+                    ) : (
+                      <Tag color='green'>进行中</Tag>
+                    )
+                  }
+                  {
+                    item.type === 'tc' ?
+                      <Tag color={item.disabled ? '' : '#55acee'} style={{ marginRight: 0 }}>体彩</Tag> :
+                      <Tag color={item.disabled ? '' : '#f50'} style={{ marginRight: 0 }}>福彩</Tag>
+                  }
+                </div>
+              )
               return (
-                <Card key={item.id} actions={actions} title={item.name} extra={tag} style={{ width: 300 }}>
+                <Card key={item.id} actions={actions} title={item.name} extra={tags} style={{ width: 300 }}>
                   <p>日期：{item.date}</p>
-                  <p>客户数(人)：{item.clientCount}</p>
-                  <p>订单数(单)：{item.orderCount}</p>
-                  <p>总金额(元)：{item.amount}</p>
+                  <p>客户数(人)：{lodash.uniq(clients).length}</p>
+                  <p>订单数(单)：{item.orders.length}</p>
+                  <p>总金额(元)：{total}</p>
+                  <p>开奖号码：{item.lotteryNumber ? item.lotteryNumber : '未开奖'}</p>
                 </Card>
               )
             })
@@ -153,6 +183,7 @@ const Periods = () => {
           />
         </div>
         <AddModal ref={addModalRef} onCreate={onCreate} />
+        <OpenLotteryModal ref={openLotteryModalRef} onSuccess={handleGetListData} />
       </div>
     </div>
   )

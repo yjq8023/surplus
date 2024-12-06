@@ -14,11 +14,13 @@ datasource db {
 }
 
 model Periods {
-  id     String   @id @default(uuid())
-  name   String
-  date   DateTime @db.Date
-  type   String
-  Orders Orders[]
+  id            String   @id @default(uuid())
+  name          String
+  date          DateTime @db.Date
+  type          String
+  orders        Orders[]
+  lotteryNumber String?
+  disabled      Boolean? @default(false)
 }
 
 model Clients {
@@ -27,7 +29,7 @@ model Clients {
   wechat     String
   remark     String?
   createTime DateTime @default(now())
-  Orders     Orders[]
+  orders     Orders[]
 }
 
 model Orders {
@@ -41,11 +43,16 @@ model Orders {
 }
 
 model Tickets {
-  id         String   @id @default(uuid())
-  order      Orders   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId    String
-  type       String
-  times      Int
-  data       Json
-  createTime DateTime @default(now())
+  id          String   @id @default(uuid())
+  order       Orders   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  type        String
+  times       Int
+  data        Json
+  unitPrice   Int
+  total       Int
+  createTime  DateTime @default(now())
+  isPrize     Boolean? // 是否中奖
+  prizeNumber String? // 中奖号码
+  prizeAmount Int? // 中奖金额
 }

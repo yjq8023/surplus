@@ -12,3 +12,7 @@ export const deletePeriods = (id: string) => {
 export const getPeriodsOptions = (d: any = {}) => {
   return request.get('/periods/options', d)
 }
+// 开奖
+export const openLottery = (d: any) => {
+  return request.post('/periods/openLottery', d)
+}

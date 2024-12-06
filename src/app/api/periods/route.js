@@ -42,6 +42,13 @@ export const GET = async (request) => {
     orderBy: {
       date: 'desc' // 按date字段降序排序
     },
+    include: {
+      orders: {
+        include: {
+          tickets: true
+        }
+      }
+    },
     skip: (page - 1) * pageSize, // 跳过的条数
     take: pageSize // 获取的条数
   });
@@ -60,10 +67,7 @@ export const GET = async (request) => {
       data: res.map((item) => {
         return {
           ...item,
-          date: dayjs(item.date).format('YYYY-MM-DD'),
-          clientCount: 0,
-          orderCount: 0,
-          amount: 0
+          date: dayjs(item.date).format('YYYY-MM-DD')
         }
       })
     }

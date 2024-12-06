@@ -12,54 +12,22 @@ import { useParams, useSearchParams } from 'next/navigation'
 import { getClientOptions } from '@/services/client';
 import { createOrder } from '@/services/orders';
 import { isNull } from '@/utils';
+import ClientSelect from '@/components/ClientSelect';
+import PeriodsSelect from '@/components/PeriodsSelect';
 
 const FormItem = Form.Item
 
 const Counter = () => {
-  const [options, setOptions] = useState([])
-  const [userOptions, setUserOptions] = useState([])
   const [submiting, setSubmiting] = useState(false)
   const [form] = Form.useForm()
   const params = useSearchParams();
   const periodsId = params.get('periodsId')
-
-  useEffect(() => {
-    handleGetPeriodsOptions()
-    handleGetClientOptions()
-  }, [])
 
   const onAdd = (d: any) => {
     const data = form.getFieldValue('tickets') || []
     data.push(d)
     form.setFieldsValue({
       tickets: data
-    })
-  }
-
-  const handleGetPeriodsOptions = async () => {
-    const res = await getPeriodsOptions({})
-    setOptions(res.map((item: any) => {
-      const tag = item.type === 'tc' ? <Tag color={'#55acee'} style={{ marginRight: 0 }}>体</Tag> : <Tag color={'#f50'} style={{ marginRight: 0 }}>福</Tag>
-      return {
-        label: (
-          <div>
-            <span>{`${item.name}（${item.date}）`}</span>
-            {tag}
-          </div>
-        ),
-        value: item.id
-      }
-    }))
-  }
-
-  const handleGetClientOptions = () => {
-    getClientOptions().then((res) => {
-      setUserOptions(res.map((item: any) => {
-        return {
-          label: item.name,
-          value: item.id
-        }
-      }))
     })
   }
 
@@ -97,7 +65,7 @@ const Counter = () => {
           <h4>订单信息</h4>
           <Form form={form} layout={'vertical'} onFinish={handleSubmitOrder}>
             <FormItem label={'周期'} name={'periodId'} initialValue={periodsId} rules={[{ required: true, message: '请选择周期' }]}>
-              <Select options={options} style={{ width: 320 }} placeholder={'请选择周期'} />
+              <PeriodsSelect searchParams={{ disabled: '0' }} />
             </FormItem>
             <FormItem
               label={(
@@ -109,7 +77,7 @@ const Counter = () => {
               name={'clientId'}
               rules={[{ required: true, message: '请选择客户' }]}
             >
-              <Select showSearch options={userOptions} style={{ width: 320 }} placeholder={'请选择客户，可输入搜索'} />
+              <ClientSelect />
             </FormItem>
             <FormItem label={'订单内容'} name={'tickets'} rules={[{ type: 'array', required: true, message: '请添加订单' }]}>
               <OrderContent />
@@ -130,6 +98,12 @@ const OrderContent = (props: any) => {
     return betTypes.filter((item) => {
       return item.type === type
     })[0].name
+  }
+
+  const getTotal = () => {
+    return value.reduce((total: number = 0, item: any) => {
+      return total + item.total;
+    }, 0);
   }
 
   return (
@@ -158,7 +132,7 @@ const OrderContent = (props: any) => {
                     }
                     return (
                       <span key={index} className={styles.orderContentDataItem}>
-                        {Array.isArray(numbers) ? numbers.join('') : 'todo'}
+                        {Array.isArray(numbers) ? numbers.join('') : 'error'}
                       </span>
                     )
                   })}
@@ -169,7 +143,7 @@ const OrderContent = (props: any) => {
         }
       </div>
       {
-        !!value.length && <div className={styles.total}>共{value.length}单，总价 100元</div>
+        !!value.length && <div className={styles.total}>共{value.length}单，总价 {getTotal()}元</div>
       }
     </div>
   )

@@ -91,6 +91,9 @@ export const betTypes = [
       return Promise.reject('请输入1位数字')
     },
     compute(drawingNumbers: number[], bettingNumber: number[]) {
+      console.log('drawingNumbers');
+      console.log(drawingNumbers);
+      console.log(bettingNumber);
       const num = bettingNumber.filter((i) => !isNull(i))[0]
       const index = bettingNumber.indexOf(num)
       const drawingIndex = drawingNumbers.indexOf(num)
@@ -196,5 +199,12 @@ const isExact = (numbers: number[]) => {
 const isArray = (val: any, length?: number) => {
   return Array.isArray(val) && (length ? val.filter((i: any) => !isNull(i)).length === length : true)
 }
+
+const betTypeConfig: any = {}
+betTypes.forEach((item) => {
+  betTypeConfig[item.type] = item
+})
+
+export { betTypeConfig }
 
 

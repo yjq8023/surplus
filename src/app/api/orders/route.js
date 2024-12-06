@@ -1,3 +1,4 @@
+import { isNull } from '@/utils'
 import { PrismaClient, Prisma } from '@prisma/client'
 import dayjs from 'dayjs'
 
@@ -19,6 +20,8 @@ export const POST = async (request) => {
           orderId: res.id,
           type: ticketItem.type,
           times: ticketItem.times,
+          unitPrice: ticketItem.unitPrice,
+          total: ticketItem.total,
           data: JSON.stringify(ticketItem.data)
         }
       });
@@ -34,13 +37,18 @@ export const GET = async (request) => {
   const url = new URL(request.url);
   const params = Object.fromEntries(url.searchParams.entries());
 
-  const { periodId, clientId } = params
+  const { periodId, clientId, isPrize } = params
   const page = parseInt(params.page) || 1; // 当前页码
   const pageSize = parseInt(params.pageSize) || 20; // 每页条数
   const res = await prisma.orders.findMany({
     where: {
       periodId,
-      clientId
+      clientId,
+      tickets: {
+        some: {
+          isPrize: isNull(isPrize) ? undefined : isPrize === '1' // 根据isPrize字段筛选
+        }
+      }
     },
     include: {
       tickets: true, // 查询关联的所有票据信息
@@ -65,12 +73,12 @@ export const GET = async (request) => {
     code: 0,
     body: {
       total: count, // 总条数
-      data: res.map((item) => {
+      data: res.map((orderItem) => {
         return {
-          ...item,
+          ...orderItem,
+          tickets: isNull(isPrize) ? orderItem.tickets : orderItem.tickets.filter(item => item.isPrize === (isPrize === '1'))
         }
       })
     }
   });
 }
-
