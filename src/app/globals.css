@@ -54,6 +54,7 @@ a {
   line-height: 24px;
   font-weight: 500;
 }
+
 .sub-title:before {
   content: ' ';
   position: absolute;
@@ -64,4 +65,27 @@ a {
   height: 14px;
   border-radius: 2px;
   background-color: var(--primary);
+}
+
+div::-webkit-scrollbar {
+  width: 8px;
+  height: 10px;
+}
+
+div::-webkit-scrollbar-track {
+  background: rgb(239, 239, 239);
+  border-radius: 2px;
+}
+
+div::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 10px;
+}
+
+div::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+div::-webkit-scrollbar-corner {
+  background: #179a16;
 }

@@ -6,14 +6,13 @@ import { Form, Space, InputNumber, Row, Col, Button, Input, Empty, Select, Tag, 
 import styles from "./index.module.scss";
 import { betTypes } from "@/config";
 import YiMaDIngWei from "@/components/BetTypes/YiMaDIngWei";
-import { getPeriodsOptions } from '@/services/periods'
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import { useParams, useSearchParams } from 'next/navigation'
-import { getClientOptions } from '@/services/client';
+import { useSearchParams } from 'next/navigation'
 import { createOrder } from '@/services/orders';
 import { isNull } from '@/utils';
 import ClientSelect from '@/components/ClientSelect';
 import PeriodsSelect from '@/components/PeriodsSelect';
+import { CloseCircleFilled } from '@ant-design/icons'
 
 const FormItem = Form.Item
 
@@ -29,6 +28,7 @@ const Counter = () => {
     form.setFieldsValue({
       tickets: data
     })
+    message.success('已添加')
   }
 
   const handleSubmitOrder = async (formData: any) => {
@@ -82,8 +82,11 @@ const Counter = () => {
             <FormItem label={'订单内容'} name={'tickets'} rules={[{ type: 'array', required: true, message: '请添加订单' }]}>
               <OrderContent />
             </FormItem>
-            <div style={{ padding: '20px 48px 0' }}>
-              <Button loading={submiting} size='large' block type={'primary'} htmlType='submit'>提交</Button>
+            <div>
+              <Space align='center'>
+                <Button loading={submiting} size='large' htmlType='reset' style={{ width: 260 }}>重置</Button>
+                <Button loading={submiting} size='large' type={'primary'} htmlType='submit' style={{ width: 260 }}>提交</Button>
+              </Space>
             </div>
           </Form>
         </div>
@@ -93,7 +96,7 @@ const Counter = () => {
 }
 
 const OrderContent = (props: any) => {
-  const { value = [] } = props
+  const { value = [], onChange } = props
   const getTitle = (type: string) => {
     return betTypes.filter((item) => {
       return item.type === type
@@ -104,6 +107,13 @@ const OrderContent = (props: any) => {
     return value.reduce((total: number = 0, item: any) => {
       return total + item.total;
     }, 0);
+  }
+
+  const handleDelete = (index: number) => {
+    const newValue = [...value]
+    newValue.splice(index, 1)
+    onChange(newValue)
+    message.success('已删除')
   }
 
   return (
@@ -118,6 +128,7 @@ const OrderContent = (props: any) => {
             const isNeedEmpty = ['ymdw', 'emdw'].includes(item.type)
             return (
               <div key={index} className={styles.orderContentItem}>
+                <CloseCircleFilled className={styles.deleteIcon} onClick={() => handleDelete(index)} />
                 <div className={styles.orderContentItemTitle}>
                   {index + 1}.&nbsp;
                   {getTitle(item.type)}，共 {item.data?.length} 注，{item.times} 倍，合计 {total} 元

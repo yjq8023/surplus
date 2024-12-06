@@ -29,9 +29,6 @@ const Client = () => {
     handleGetListData()
   }
 
-  const handleAdd = (item?: any) => {
-    addModalRef.current?.open(item)
-  }
 
   const handleGetListData: any = (page = 1) => {
     const searchFormData = searchForm.getFieldsValue();
@@ -57,36 +54,30 @@ const Client = () => {
     })
   }
 
-  const handleDelete = (item: any) => {
-    Modal.confirm({
-      title: '确认删除？',
-      content: '删除客户及其所有订单数据，该操作无法恢复',
-      async onOk() {
-        await deleteClient(item.id)
-        handleGetListData()
-      }
-    })
-  }
-
-
   const renderNumber = (type: string, data: any) => {
     const isNeedEmpty = ['ymdw', 'emdw'].includes(type)
+    const d = JSON.parse(data)
+    if (!Array.isArray(d)) {
+      return ''
+    }
     return (
-      <Space wrap>
-        {JSON.parse(data).map((item: any, index: number) => {
-          let numbers = [...item];
-          if (isNeedEmpty) {
-            numbers = item.map((i: any) => {
-              return isNull(i) ? '-' : i
-            })
-          }
-          return (
-            <span key={index} className={styles.numberItem}>
-              {Array.isArray(numbers) ? numbers.join('') : 'error'}
-            </span>
-          )
-        })}
-      </Space>
+      <div className={styles.tgas}>
+        <Space>
+          {JSON.parse(data).map((item: any, index: number) => {
+            let numbers = [...item];
+            if (isNeedEmpty) {
+              numbers = item.map((i: any) => {
+                return isNull(i) ? '-' : i
+              })
+            }
+            return (
+              <span key={index} className={styles.numberItem}>
+                {Array.isArray(numbers) ? numbers.join('') : 'error'}
+              </span>
+            )
+          })}
+        </Space>
+      </div>
     )
   }
   const columns: any = [
@@ -100,7 +91,8 @@ const Client = () => {
           rowSpan: record.rowSpan
         }
       },
-      align: 'center'
+      align: 'center',
+      fixed: 'left'
     },
     {
       title: '客户名称',
@@ -111,7 +103,8 @@ const Client = () => {
         return {
           rowSpan: record.rowSpan
         }
-      }
+      },
+      fixed: 'left'
     },
     {
       title: '周期',
@@ -187,6 +180,7 @@ const Client = () => {
       title: '中奖号码',
       dataIndex: 'prizeNumber',
       key: 'prizeNumber',
+      width: 320,
       render(t: string, record: any) {
         return renderNumber(record.type, record.prizeNumber)
       }
@@ -241,7 +235,7 @@ const Client = () => {
           </div>
         </div>
         <div>
-          <Table dataSource={listData} columns={columns} size={'small'} bordered pagination={false}></Table>
+          <Table scroll={{ x: 1700 }} dataSource={listData} columns={columns} size={'small'} bordered pagination={false}></Table>
         </div>
       </div>
       <AddModal ref={addModalRef} onCreated={handleGetListData} />

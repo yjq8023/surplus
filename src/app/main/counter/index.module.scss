@@ -69,6 +69,15 @@
   padding: 6px 12px;
   background-color: rgba(245, 245, 245, 0.8);
   border-radius: 4px;
+  position: relative;
+}
+
+.deleteIcon {
+  color: var(--red);
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  cursor: pointer;
 }
 
 .total {

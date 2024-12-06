@@ -1,3 +1,4 @@
+import { isNull } from '@/utils';
 import { PrismaClient, Prisma } from '@prisma/client'
 import dayjs from 'dayjs'
 
@@ -6,12 +7,10 @@ export const GET = async (request) => {
   const url = new URL(request.url);
   const params = Object.fromEntries(url.searchParams.entries());
 
-  const where = {}
-  if (params.disabled) {
-    where.disabled = Boolean(params.disabled)
-  }
   const res = await prisma.periods.findMany({
-    where,
+    where: {
+      disabled: isNull(params.disabled) ? undefined : params.disabled === '1'
+    },
   });
 
   return Response.json({
