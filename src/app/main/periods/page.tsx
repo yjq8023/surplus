@@ -125,8 +125,10 @@ const Periods = () => {
                 }
               ]
               const actions: React.ReactNode[] = [
-                <Link href={`/main/counter?periodsId=${item.id}`}>打单</Link>,
-                <a>订单列表</a>,
+                <Button type='link' disabled={item.disabled} size='small'>
+                  <Link href={`/main/counter?periodsId=${item.id}`}>打单</Link>
+                </Button>,
+                <Link href={`/main/orders?periodsId=${item.id}`}>订单列表</Link>,
                 (
                   <Dropdown menu={{ items, onClick: (e) => handleAction(e, item) }} placement="bottomLeft" arrow={{ pointAtCenter: true }}>
                     <a onClick={(e) => e.preventDefault()}>
@@ -144,7 +146,6 @@ const Periods = () => {
               const clients = item.orders.map((item: any) => {
                 return item.clientId
               });
-              const tag = item.type === 'tc' ? <Tag color={'#55acee'} style={{ marginRight: 0 }}>体彩</Tag> : <Tag color={'#f50'} style={{ marginRight: 0 }}>福彩</Tag>
               const tags = (
                 <div>
                   {

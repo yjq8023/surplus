@@ -4,6 +4,7 @@ import { Space, Table, Form, Input, Button, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons'
 import AddModal from './components/AddModal';
 import { deleteClient, getClient } from '@/services/client';
+import Link from 'next/link';
 
 const Client = () => {
   const [total, setTotal] = useState(0)
@@ -78,7 +79,7 @@ const Client = () => {
       render(text: string, record: any) {
         return (
           <Space>
-            <a>订单</a>
+            <Link href={`/main/orders?clientId=${record.id}`}>订单列表</Link>
             <a onClick={() => handleAdd(record)}>修改</a>
             <a onClick={() => handleDelete(record)}>删除</a>
           </Space>

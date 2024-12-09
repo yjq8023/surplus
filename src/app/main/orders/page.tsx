@@ -11,6 +11,7 @@ import styles from './index.module.scss';
 import { betTypeConfig } from '@/config';
 import PeriodsSelect from '@/components/PeriodsSelect';
 import ClientSelect from '@/components/ClientSelect';
+import { useSearchParams } from 'next/navigation'
 
 const Client = () => {
   const [total, setTotal] = useState(0)
@@ -18,6 +19,9 @@ const Client = () => {
   const [pageSize, setPageSize] = useState(10)
   const [listData, setListData] = useState<any[]>([])
   const [searchForm] = Form.useForm()
+  const params = useSearchParams();
+  const periodsId = params.get('periodsId')
+  const clientId = params.get('clientId')
 
   const addModalRef = useRef<any>()
 
@@ -202,10 +206,10 @@ const Client = () => {
       <div style={{ paddingTop: 12 }}>
         <Form form={searchForm} onFinish={() => handleSearch()} onReset={() => handleSearch()}>
           <Space size={24}>
-            <Form.Item label="周期" name={'periodId'}>
+            <Form.Item label="周期" name={'periodId'} initialValue={periodsId}>
               <PeriodsSelect style={{ width: 240 }} />
             </Form.Item>
-            <Form.Item label="客户" name={'clientId'}>
+            <Form.Item label="客户" name={'clientId'} initialValue={clientId}>
               <ClientSelect placeholder={'请选择客户'} style={{ width: 240 }} allowClear />
             </Form.Item>
             <Form.Item label="是否中奖" name={'isPrize'}>
