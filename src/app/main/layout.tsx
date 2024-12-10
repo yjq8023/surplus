@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Layout, Menu } from 'antd';
 import { AccountBookOutlined, MoneyCollectOutlined, WechatOutlined, FileDoneOutlined } from '@ant-design/icons'
 import { useRouter, usePathname } from 'next/navigation'
@@ -57,7 +57,9 @@ const MainLayout = ({ children }: any) => {
       <Layout>
         <Header className={styles.header}></Header>
         <Content className={styles.content}>
-          {children}
+          <Suspense fallback={'loding...'}>
+            {children}
+          </Suspense>
         </Content>
         {/*<Footer className={styles.footer}>Footer</Footer>*/}
       </Layout>
