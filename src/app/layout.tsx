@@ -6,6 +6,7 @@ import "./globals.css";
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 dayjs.locale('zh-cn');
+import { SessionProvider } from "next-auth/react"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,7 +34,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ConfigProvider locale={zh_CN}>
-          {children}
+          <SessionProvider>
+            {children}
+          </SessionProvider>
         </ConfigProvider>
       </body>
     </html>
