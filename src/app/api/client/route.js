@@ -36,7 +36,9 @@ export const GET = async (request) => {
   const pageSize = parseInt(params.pageSize) || 20; // 每页条数
   const res = await prisma.clients.findMany({
     where: {
-      name,
+      name: {
+        contains: name, // 使用包含查询
+      },
       wechat
     },
     orderBy: {
